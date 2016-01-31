@@ -1,0 +1,49 @@
+global proc SelectUVsFromQuadrant( float $quadrantMinU ,  float $quadrantMaxU , float $quadrantMinV , float $quadrantMaxV )
+{
+    
+    string $selectedObjects[] = `ls -sl`;
+    
+    int $amountOfUVs[] = `polyEvaluate -uv`;
+    
+    select -cl;
+        
+    int $acceptedPointsCount = 0;
+    
+    int $acceptedPointsIndecies[];
+        
+    int $index = 0;
+    
+    for( ; $index < $amountOfUVs[0] ; ++$index )
+    {
+        string $uv = ( ($selectedObjects[0] + ".map[" + $index + "]")  );
+        
+        select -r $uv;
+        
+        float $uvsCoordinates[] = `polyEditUV -query` ;
+        
+            //u
+        if( $uvsCoordinates[0] >= $quadrantMinU && $uvsCoordinates[0] <= $quadrantMaxU
+            &&
+            //v
+            $uvsCoordinates[1] >= $quadrantMinV && $uvsCoordinates[1] <= $quadrantMaxV 
+            )
+            {
+                $acceptedPointsIndecies[$acceptedPointsCount++] = $index ;
+                
+            }
+        
+        
+    }
+    
+    select -cl;
+    
+    for( $index = 0 ; $index < size($acceptedPointsIndecies) ; ++$index )
+    {
+        
+        string $uv = ( ($selectedObjects[0] + ".map[" + $acceptedPointsIndecies[$index] + "]")  );
+        
+        select -add $uv ;
+        
+    }
+       
+}
